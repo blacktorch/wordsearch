@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,27 +7,27 @@
     android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
-   <FrameLayout
-       android:id="@+id/frame"
-       android:layout_centerVertical="true"
-       android:layout_centerHorizontal="true"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent">
 
       <com.chidiebere.wordsearch.MainView
           android:id="@+id/main_view"
           android:layout_width="270dp"
-          android:layout_height="270dp"
-          android:numColumns="10"
-          android:verticalSpacing="6dp"
-          android:horizontalSpacing="6dp"
-          android:columnWidth="12dp"
+          android:layout_height="wrap_content"
           android:layout_gravity="center"
-          android:gravity="center">
-      </com.chidiebere.wordsearch.MainView>
+          android:background="@drawable/gridview_bg"
+          android:columnWidth="12dp"
+          android:gravity="center"
+          android:horizontalSpacing="6dp"
+          android:numColumns="10"
+          android:padding="16dp"
+          android:stretchMode="columnWidth"
+          android:verticalSpacing="6dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toStartOf="parent"
+          app:layout_constraintStart_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintVertical_bias="0.32"></com.chidiebere.wordsearch.MainView>
 
-   </FrameLayout>
 
 
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
