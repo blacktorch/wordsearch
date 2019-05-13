@@ -1,4 +1,4 @@
-package com.example.wordsearch;
+package com.chidiebere.wordsearch;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.wordsearch", appContext.getPackageName());
+        assertEquals("com.chidiebere.wordsearch", appContext.getPackageName());
     }
 }
