@@ -196,12 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                 wordsLeftCount[0]--;
 
-                                                if (wordsLeftCount[0]==0){
-                                                    wordCount.setVisibility(View.INVISIBLE);
-                                                    wordsLeft.setText("COMPLETED");
-                                                    timer.stop();
-                                                    gridView.setEnabled(false);
-                                                }
+
 
                                                 formedText.startAnimation(scaleUp);
                                                 formedText.startAnimation(scaleDown);
@@ -210,12 +205,21 @@ public class MainActivity extends AppCompatActivity {
                                                 handler.postDelayed(new Runnable() {
                                                     @Override
                                                     public void run() {
-                                                        //Do something after 100ms
-                                                        formedText.startAnimation(textOut);
-                                                        formedText.setVisibility(View.INVISIBLE);
+
                                                         wordCount.setText(String.valueOf(wordsLeftCount[0]));
+                                                        if (wordsLeftCount[0]==0){
+                                                            formedText.setText("COMPLETED!");
+                                                            formedText.startAnimation(textIn);
+                                                            timer.stop();
+                                                            gridView.setEnabled(false);
+                                                        } else {
+                                                            formedText.startAnimation(textOut);
+                                                            formedText.setVisibility(View.INVISIBLE);
+                                                        }
                                                     }
                                                 }, 1000);
+
+
 
                                                 break;
                                             }
