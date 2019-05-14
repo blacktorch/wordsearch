@@ -131,4 +131,8 @@ public class MainView extends GridView {
     public void createLine(){
         lines.add(new Line(startX, startY, endX, endY, new Paint(paint)));
     }
+
+    public Paint getPaint(){
+        return paint;
+    }
 }

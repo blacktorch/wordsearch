@@ -7,6 +7,17 @@
     android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="TEST TEXT"
+          android:textColor="#FFF"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toStartOf="parent"
+          app:layout_constraintStart_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintVertical_bias="0.060000002" />
+
 
       <com.chidiebere.wordsearch.MainView
           android:id="@+id/main_view"
@@ -25,7 +36,94 @@
           app:layout_constraintEnd_toStartOf="parent"
           app:layout_constraintStart_toEndOf="parent"
           app:layout_constraintTop_toTopOf="parent"
-          app:layout_constraintVertical_bias="0.32"></com.chidiebere.wordsearch.MainView>
+          app:layout_constraintVertical_bias="0.38">
+
+      </com.chidiebere.wordsearch.MainView>
+
+      <RelativeLayout
+          android:layout_marginStart="32dp"
+          android:layout_marginEnd="32dp"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toStartOf="parent"
+          app:layout_constraintStart_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintVertical_bias="0.89">
+
+            <com.chidiebere.wordsearch.ResultTextView
+                android:id="@+id/text_java"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="JAVA"
+                android:textColor="#FFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                />
+            <com.chidiebere.wordsearch.ResultTextView
+                android:id="@+id/text_swift"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="SWIFT"
+                android:textColor="#FFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+
+                />
+            <com.chidiebere.wordsearch.ResultTextView
+                android:id="@+id/text_kotlin"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="KOTLIN"
+                android:textColor="#FFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+
+                android:layout_alignParentEnd="true"
+                />
+            <com.chidiebere.wordsearch.ResultTextView
+                android:id="@+id/text_mobile"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="MOBILE"
+                android:textColor="#FFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_below="@id/text_java"
+                />
+            <com.chidiebere.wordsearch.ResultTextView
+                android:id="@+id/text_variable"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="VARIABLE"
+                android:textColor="#FFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_below="@id/text_swift"
+                android:layout_centerHorizontal="true"
+                />
+            <com.chidiebere.wordsearch.ResultTextView
+                android:id="@+id/text_objectivec"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="OBJECTIVE C"
+                android:textColor="#FFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_below="@id/text_kotlin"
+                android:layout_alignParentEnd="true"
+                />
+
+      </RelativeLayout>
+
+
 
 
 

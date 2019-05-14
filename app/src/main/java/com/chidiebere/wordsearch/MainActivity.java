@@ -9,6 +9,16 @@ import android.view.View;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.chidiebere.wordsearch.Constants.JAVA;
+import static com.chidiebere.wordsearch.Constants.KOTLIN;
+import static com.chidiebere.wordsearch.Constants.MOBILE;
+import static com.chidiebere.wordsearch.Constants.OBJECTIVEC;
+import static com.chidiebere.wordsearch.Constants.SWIFT;
+import static com.chidiebere.wordsearch.Constants.VARIABLE;
+
 public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
@@ -25,6 +35,15 @@ public class MainActivity extends AppCompatActivity {
         final boolean[] isWordCorrect = {false};
         final int[] currentPosition = {-1};
         final StringBuilder buildWord = new StringBuilder();
+        final List<String> foundWords = new ArrayList<>();
+
+        final ResultTextView objectiveC = findViewById(R.id.text_objectivec);
+        final ResultTextView java = findViewById(R.id.text_java);
+        final ResultTextView swift = findViewById(R.id.text_swift);
+        final ResultTextView kotlin = findViewById(R.id.text_kotlin);
+        final ResultTextView mobile = findViewById(R.id.text_mobile);
+        final ResultTextView variable = findViewById(R.id.text_variable);
+
 
 
         gridView.setOnTouchListener(new View.OnTouchListener() {
@@ -34,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
                 int action = event.getActionMasked();
                 isWordCorrect[0] = false;
+
 
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
@@ -48,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
                             v.getParent().requestDisallowInterceptTouchEvent(true);
                             TextView cellView = (TextView) gridView.getChildAt(position);
-                            float centreX = cellView.getX() + cellView.getWidth() / 2;
-                            float centreY = cellView.getY() + cellView.getHeight() / 2;
+                            float centreX = cellView.getX() + cellView.getWidth() / 2.0f;
+                            float centreY = cellView.getY() + cellView.getHeight() / 2.0f;
 
                             String a = cellView.getText().toString();
 
@@ -82,19 +102,63 @@ public class MainActivity extends AppCompatActivity {
                                 case MotionEvent.ACTION_UP:
 
                                     TextView cv = (TextView) gridView.getChildAt(position);
-                                    float cX = cv.getX() + cv.getWidth() / 2;
-                                    float cY = cv.getY() + cv.getHeight() / 2;
+                                    float cX = cv.getX() + cv.getWidth() / 2.0f;
+                                    float cY = cv.getY() + cv.getHeight() / 2.0f;
                                     Log.i(">>>>><<<<<<<????????", buildWord.toString());
 
                                     for (String word : Constants.words){
                                         if (word.equals(buildWord.toString())){
-                                            gridView.setEndX(cX);
-                                            gridView.setEndY(cY);
-                                            gridView.draw();
-                                            gridView.createLine();
-                                            buildWord.setLength(0);
-                                            isWordCorrect[0] = true;
-                                            break;
+                                            if (!foundWords.contains(buildWord.toString())){
+                                                foundWords.add(buildWord.toString());
+                                                gridView.setEndX(cX);
+                                                gridView.setEndY(cY);
+                                                gridView.draw();
+                                                gridView.createLine();
+                                                isWordCorrect[0] = true;
+
+                                                String foundWord = buildWord.toString();
+
+                                                switch (foundWord){
+                                                    case JAVA:
+                                                        java.setDeleted(true);
+                                                        java.setPaint(gridView.getPaint());
+                                                        java.startStrikeThroughAnimation();
+                                                        buildWord.setLength(0);
+                                                        break;
+                                                    case SWIFT:
+                                                        swift.setDeleted(true);
+                                                        swift.setPaint(gridView.getPaint());
+                                                        swift.startStrikeThroughAnimation();
+                                                        buildWord.setLength(0);
+                                                        break;
+                                                    case KOTLIN:
+                                                        kotlin.setDeleted(true);
+                                                        kotlin.setPaint(gridView.getPaint());
+                                                        kotlin.startStrikeThroughAnimation();
+                                                        buildWord.setLength(0);
+                                                        break;
+                                                    case MOBILE:
+                                                        mobile.setDeleted(true);
+                                                        mobile.setPaint(gridView.getPaint());
+                                                        mobile.startStrikeThroughAnimation();
+                                                        buildWord.setLength(0);
+                                                        break;
+                                                    case VARIABLE:
+                                                        variable.setDeleted(true);
+                                                        variable.setPaint(gridView.getPaint());
+                                                        variable.startStrikeThroughAnimation();
+                                                        buildWord.setLength(0);
+                                                        break;
+                                                    case OBJECTIVEC:
+                                                        objectiveC.setDeleted(true);
+                                                        objectiveC.setPaint(gridView.getPaint());
+                                                        objectiveC.startStrikeThroughAnimation();
+                                                        buildWord.setLength(0);
+                                                        break;
+                                                }
+
+                                                break;
+                                            }
                                         }
                                     }
                                     buildWord.setLength(0);
