@@ -13,11 +13,11 @@ import java.util.Random;
 public class MainView extends GridView {
 
     private static final float LINE_WIDTH = 50.0f;
-    private Paint paint;
+    private GridPaint paint;
     protected Context context;
     Random rand;
 
-    List<Line> lines;
+    ArrayList<Line> lines;
 
     private float startX;
     private float startY;
@@ -28,7 +28,7 @@ public class MainView extends GridView {
         super(context);
         this.context = context;
         rand = new Random(System.currentTimeMillis());
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint = new GridPaint(Paint.ANTI_ALIAS_FLAG);
 
         paint.setColor(Palette.colors[rand.nextInt(Palette.colors.length)]);
         paint.setStrokeWidth(LINE_WIDTH);
@@ -46,7 +46,7 @@ public class MainView extends GridView {
         super(context, attrs);
         this.context = context;
         rand = new Random(System.currentTimeMillis());
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint = new GridPaint(Paint.ANTI_ALIAS_FLAG);
 
         paint.setColor(Palette.colors[rand.nextInt(Palette.colors.length)]);
         paint.setStrokeWidth(LINE_WIDTH);
@@ -128,11 +128,17 @@ public class MainView extends GridView {
 
     }
 
-    public void createLine(){
-        lines.add(new Line(startX, startY, endX, endY, new Paint(paint)));
+    public ArrayList<Line> createLine(){
+        lines.add(new Line(startX, startY, endX, endY, new GridPaint(paint)));
+        return lines;
     }
 
-    public Paint getPaint(){
+    public GridPaint getPaint(){
         return paint;
+    }
+
+    public void setLines(ArrayList<Line> lines){
+        this.lines = lines;
+        invalidate();
     }
 }

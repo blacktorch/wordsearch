@@ -6,13 +6,16 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.animation.AccelerateInterpolator;
 
-public class ResultTextView extends android.support.v7.widget.AppCompatTextView {
+import java.io.Serializable;
+
+public class ResultTextView extends android.support.v7.widget.AppCompatTextView implements Serializable {
 
     private static final float LINE_WIDTH = 50.0f;
-    private Paint paint;
+    private GridPaint paint;
     private boolean isAnimationStarted;
     private float targetLength;
     private float totalLength;
@@ -20,10 +23,11 @@ public class ResultTextView extends android.support.v7.widget.AppCompatTextView 
 
     //should always show Strike-Through
     private boolean isDeleted;
+    private boolean isResume;
 
     public ResultTextView(Context context) {
         super(context);
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint = new GridPaint(Paint.ANTI_ALIAS_FLAG);
 
         paint.setColor(Palette.colors[2]);
         paint.setStrokeWidth(LINE_WIDTH);
@@ -37,7 +41,7 @@ public class ResultTextView extends android.support.v7.widget.AppCompatTextView 
 
     public ResultTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint = new GridPaint(Paint.ANTI_ALIAS_FLAG);
 
         paint.setColor(Palette.colors[2]);
         paint.setStrokeWidth(LINE_WIDTH);
@@ -53,19 +57,24 @@ public class ResultTextView extends android.support.v7.widget.AppCompatTextView 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (isAnimationStarted) {
-            canvas.drawLine(30, startY, targetLength, startY, paint);
+            canvas.drawLine(25, startY, targetLength, startY, paint);
         }
         if (isDeleted && !isAnimationStarted) {
-            canvas.drawLine(30, startY, totalLength, startY, paint);
+            canvas.drawLine(25, startY, totalLength, startY, paint);
         }
+
+        if (isResume){
+            canvas.drawLine(25, startY, totalLength, startY, paint);
+        }
+
     }
 
     public void startStrikeThroughAnimation() {
-        totalLength = getWidth()-30;
+        totalLength = getWidth()-25;
         startY = (float) getHeight() / 2;
         isAnimationStarted = true;
 
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "targetLength", 30, totalLength);
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(this, "targetLength", 25, totalLength);
         objectAnimator.setInterpolator(new AccelerateInterpolator());
         objectAnimator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -101,7 +110,10 @@ public class ResultTextView extends android.support.v7.widget.AppCompatTextView 
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
-        totalLength = getWidth()-30;
+        totalLength = getWidth()-25;
+        isAnimationStarted = false;
+        isResume = false;
+
     }
 
     public float getTargetLength() {
@@ -112,7 +124,17 @@ public class ResultTextView extends android.support.v7.widget.AppCompatTextView 
         this.targetLength = targetLength;
     }
 
-    public void setPaint(Paint paint){
+    public void setPaint(GridPaint paint){
         this.paint = paint;
     }
+    public GridPaint getGridPaint(){
+        return paint;
+    }
+
+    public void reDrawLine(){
+        isResume = true;
+        totalLength = getWidth()-25;
+    }
+
+
 }

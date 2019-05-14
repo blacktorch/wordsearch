@@ -1,11 +1,18 @@
 package com.chidiebere.wordsearch;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -14,6 +21,8 @@ import android.widget.Chronometer;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,42 +33,71 @@ import static com.chidiebere.wordsearch.Constants.OBJECTIVEC;
 import static com.chidiebere.wordsearch.Constants.SWIFT;
 import static com.chidiebere.wordsearch.Constants.VARIABLE;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Serializable {
+
+
+    List<String> foundWords;
+
+    ResultTextView objectiveC;
+    ResultTextView java;
+    ResultTextView swift;
+    ResultTextView kotlin;
+    ResultTextView mobile;
+    ResultTextView variable;
+
+    ResultTextView rObjectiveC;
+    ResultTextView rJava;
+    ResultTextView rSwift;
+    ResultTextView rKotlin;
+    ResultTextView rMobile;
+    ResultTextView rVariable;
+
+    Animation textOut;
+    Animation scaleUp;
+    Animation scaleDown;
+
+    TextView wordCount;
+    int wordsLeftCount = 6;
+
+    char[] characters;
+
+    ArrayList<Line> lines;
+    CharAdapter charAdapter;
+    boolean isResume = false;
+    long pausedTime = 0;
+    boolean isComplete = false;
+    boolean isRefresh = false;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
-        final MainView gridView = findViewById(R.id.main_view);
-        final CharAdapter charAdapter = new CharAdapter(this);
-        gridView.setAdapter(charAdapter);
-
-
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         final boolean[] isWordCorrect = {false};
         final int[] currentPosition = {-1};
         final StringBuilder buildWord = new StringBuilder();
-        final List<String> foundWords = new ArrayList<>();
 
-        final ResultTextView objectiveC = findViewById(R.id.text_objectivec);
-        final ResultTextView java = findViewById(R.id.text_java);
-        final ResultTextView swift = findViewById(R.id.text_swift);
-        final ResultTextView kotlin = findViewById(R.id.text_kotlin);
-        final ResultTextView mobile = findViewById(R.id.text_mobile);
-        final ResultTextView variable = findViewById(R.id.text_variable);
+        objectiveC = findViewById(R.id.text_objectivec);
+        java = findViewById(R.id.text_java);
+        swift = findViewById(R.id.text_swift);
+        kotlin = findViewById(R.id.text_kotlin);
+        mobile = findViewById(R.id.text_mobile);
+        variable = findViewById(R.id.text_variable);
 
         final TextView formedText = findViewById(R.id.formed_text);
         final Animation textIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.text_in);
-        final Animation textOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.text_out);
-        final Animation scaleUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_up);
-        final Animation scaleDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_down);
+        textOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.text_out);
+        scaleUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_up);
+        scaleDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_down);
+        foundWords = new ArrayList<>();
 
-        final TextView wordCount = findViewById(R.id.word_count);
-        final TextView wordsLeft = findViewById(R.id.words_left);
-        final int[] wordsLeftCount = {6};
+        wordCount = findViewById(R.id.word_count);
 
         final long[] elapsedTime = new long[1];
         final Chronometer timer = findViewById(R.id.timer_text);
@@ -67,15 +105,61 @@ public class MainActivity extends AppCompatActivity {
         timer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
-                long minutes = ((SystemClock.elapsedRealtime() - timer.getBase())/1000) / 60;
-                long seconds = ((SystemClock.elapsedRealtime() - timer.getBase())/1000) % 60;
                 elapsedTime[0] = SystemClock.elapsedRealtime();
-                Log.d("TIMER", "onChronometerTick: " + minutes + " : " + seconds);
+
             }
         });
 
-        timer.start();
+        charAdapter = new CharAdapter(this);
+         final MainView gridView = findViewById(R.id.main_view);
 
+        gridView.setAdapter(charAdapter);
+
+
+
+        //Handle App State Restore
+        if (savedInstanceState != null){
+            boolean resume = savedInstanceState.getBoolean("RESUME");
+            if (resume) {
+                isResume = true;
+                foundWords = savedInstanceState.getStringArrayList("FOUND_WORDS");
+                rObjectiveC = (ResultTextView) savedInstanceState.getSerializable(OBJECTIVEC);
+                rJava = (ResultTextView) savedInstanceState.getSerializable(JAVA);
+                rSwift = (ResultTextView) savedInstanceState.getSerializable(SWIFT);
+                rKotlin = (ResultTextView) savedInstanceState.getSerializable(KOTLIN);
+                rMobile = (ResultTextView) savedInstanceState.getSerializable(MOBILE);
+                rVariable = (ResultTextView) savedInstanceState.getSerializable(VARIABLE);
+                pausedTime = savedInstanceState.getLong("TIME");
+                wordsLeftCount = savedInstanceState.getInt("COUNT");
+                characters = savedInstanceState.getCharArray("CHAR");
+                isComplete = savedInstanceState.getBoolean("COMPLETE");
+                lines = savedInstanceState.getParcelableArrayList("LINE");
+            } else {
+                isResume = false;
+            }
+        }
+
+        if (isResume && !isRefresh) {
+            if (lines != null){
+                gridView.setLines(lines);
+            }
+            timer.setBase(pausedTime);
+            Log.i("###########", "TIME: " + String.valueOf(pausedTime));
+            timer.start();
+            wordCount.setText(String.valueOf(wordsLeftCount));
+            charAdapter.setCharacters(characters);
+            charAdapter.notifyDataSetChanged();
+            if (isComplete){
+                formedText.setText("COMPLETED!");
+                formedText.startAnimation(textIn);
+                timer.stop();
+                gridView.setEnabled(false);
+            }
+
+        } else {
+            characters = charAdapter.getCharacters();
+            timer.start();
+        }
 
 
         gridView.setOnTouchListener(new View.OnTouchListener() {
@@ -85,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
 
                 int action = event.getActionMasked();
                 isWordCorrect[0] = false;
-
 
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
@@ -105,16 +188,15 @@ public class MainActivity extends AppCompatActivity {
 
                             String a = cellView.getText().toString();
 
-                            if (position != currentPosition[0]){
+                            if (position != currentPosition[0]) {
                                 buildWord.append(a);
                                 formedText.setText(buildWord.toString());
-                                if (formedText.getVisibility() ==  View.INVISIBLE){
+                                if (formedText.getVisibility() == View.INVISIBLE) {
                                     formedText.startAnimation(textIn);
                                     formedText.setVisibility(View.VISIBLE);
                                 }
                                 currentPosition[0] = position;
                             }
-
 
                             switch (action) {
                                 case MotionEvent.ACTION_DOWN:
@@ -128,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                                     break;
 
                                 case MotionEvent.ACTION_MOVE:
-                                    if (gridView.getStartX() == 0 && gridView.getStartY() == 0){
+                                    if (gridView.getStartX() == 0 && gridView.getStartY() == 0) {
                                         gridView.setStartY(event.getY());
                                         gridView.setStartX(event.getX());
                                     }
@@ -137,106 +219,13 @@ public class MainActivity extends AppCompatActivity {
                                     gridView.draw();
                                     break;
                                 case MotionEvent.ACTION_UP:
-
-                                    TextView cv = (TextView) gridView.getChildAt(position);
-                                    float cX = cv.getX() + cv.getWidth() / 2.0f;
-                                    float cY = cv.getY() + cv.getHeight() / 2.0f;
-                                    Log.i(">>>>><<<<<<<????????", buildWord.toString());
-
-                                    for (String word : Constants.words){
-                                        if (word.equals(buildWord.toString())){
-                                            if (!foundWords.contains(buildWord.toString())){
-                                                foundWords.add(buildWord.toString());
-                                                gridView.setEndX(cX);
-                                                gridView.setEndY(cY);
-                                                gridView.draw();
-                                                gridView.createLine();
-                                                isWordCorrect[0] = true;
-
-                                                String foundWord = buildWord.toString();
-
-                                                switch (foundWord){
-                                                    case JAVA:
-                                                        java.setDeleted(true);
-                                                        java.setPaint(gridView.getPaint());
-                                                        java.startStrikeThroughAnimation();
-                                                        buildWord.setLength(0);
-                                                        break;
-                                                    case SWIFT:
-                                                        swift.setDeleted(true);
-                                                        swift.setPaint(gridView.getPaint());
-                                                        swift.startStrikeThroughAnimation();
-                                                        buildWord.setLength(0);
-                                                        break;
-                                                    case KOTLIN:
-                                                        kotlin.setDeleted(true);
-                                                        kotlin.setPaint(gridView.getPaint());
-                                                        kotlin.startStrikeThroughAnimation();
-                                                        buildWord.setLength(0);
-                                                        break;
-                                                    case MOBILE:
-                                                        mobile.setDeleted(true);
-                                                        mobile.setPaint(gridView.getPaint());
-                                                        mobile.startStrikeThroughAnimation();
-                                                        buildWord.setLength(0);
-                                                        break;
-                                                    case VARIABLE:
-                                                        variable.setDeleted(true);
-                                                        variable.setPaint(gridView.getPaint());
-                                                        variable.startStrikeThroughAnimation();
-                                                        buildWord.setLength(0);
-                                                        break;
-                                                    case OBJECTIVEC:
-                                                        objectiveC.setDeleted(true);
-                                                        objectiveC.setPaint(gridView.getPaint());
-                                                        objectiveC.startStrikeThroughAnimation();
-                                                        buildWord.setLength(0);
-                                                        break;
-                                                }
-
-                                                wordsLeftCount[0]--;
-
-
-
-                                                formedText.startAnimation(scaleUp);
-                                                formedText.startAnimation(scaleDown);
-
-                                                final Handler handler = new Handler();
-                                                handler.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-
-                                                        wordCount.setText(String.valueOf(wordsLeftCount[0]));
-                                                        if (wordsLeftCount[0]==0){
-                                                            formedText.setText("COMPLETED!");
-                                                            formedText.startAnimation(textIn);
-                                                            timer.stop();
-                                                            gridView.setEnabled(false);
-                                                        } else {
-                                                            formedText.startAnimation(textOut);
-                                                            formedText.setVisibility(View.INVISIBLE);
-                                                        }
-                                                    }
-                                                }, 1000);
-
-
-
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    buildWord.setLength(0);
-                                    if (!isWordCorrect[0]){
-                                        gridView.clear();
-                                        formedText.setText("");
-                                        formedText.setVisibility(View.INVISIBLE);
-                                    }
+                                    handleEndSwipe(position, gridView, buildWord, formedText, isWordCorrect, timer, textIn);
 
                                     break;
                             }
 
                         } else {
-                            if (action == MotionEvent.ACTION_UP){
+                            if (action == MotionEvent.ACTION_UP) {
                                 buildWord.setLength(0);
                                 gridView.clear();
                                 formedText.setText("");
@@ -255,4 +244,227 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    private void handleEndSwipe(int position, final MainView gridView, StringBuilder buildWord, final TextView formedText, boolean[] isWordCorrect, final Chronometer timer, final Animation textIn) {
+        TextView cv = (TextView) gridView.getChildAt(position);
+        float cX = cv.getX() + cv.getWidth() / 2.0f;
+        float cY = cv.getY() + cv.getHeight() / 2.0f;
+        Log.i(">>>>><<<<<<<????????", buildWord.toString());
+
+        for (String word : Constants.words) {
+            if (word.equals(buildWord.toString())) {
+                if (!foundWords.contains(buildWord.toString())) {
+                    foundWords.add(buildWord.toString());
+                    gridView.setEndX(cX);
+                    gridView.setEndY(cY);
+                    gridView.draw();
+                    lines = gridView.createLine();
+                    isWordCorrect[0] = true;
+
+                    String foundWord = buildWord.toString();
+
+                    switch (foundWord) {
+                        case JAVA:
+                            java.setDeleted(true);
+                            java.setPaint(gridView.getPaint());
+                            java.startStrikeThroughAnimation();
+                            buildWord.setLength(0);
+                            break;
+                        case SWIFT:
+                            swift.setDeleted(true);
+                            swift.setPaint(gridView.getPaint());
+                            swift.startStrikeThroughAnimation();
+                            buildWord.setLength(0);
+                            break;
+                        case KOTLIN:
+                            kotlin.setDeleted(true);
+                            kotlin.setPaint(gridView.getPaint());
+                            kotlin.startStrikeThroughAnimation();
+                            buildWord.setLength(0);
+                            break;
+                        case MOBILE:
+                            mobile.setDeleted(true);
+                            mobile.setPaint(gridView.getPaint());
+                            mobile.startStrikeThroughAnimation();
+                            buildWord.setLength(0);
+                            break;
+                        case VARIABLE:
+                            variable.setDeleted(true);
+                            variable.setPaint(gridView.getPaint());
+                            variable.startStrikeThroughAnimation();
+                            buildWord.setLength(0);
+                            break;
+                        case OBJECTIVEC:
+                            objectiveC.setDeleted(true);
+                            objectiveC.setPaint(gridView.getPaint());
+                            objectiveC.startStrikeThroughAnimation();
+                            buildWord.setLength(0);
+                            break;
+                    }
+
+                    wordsLeftCount--;
+
+
+                    formedText.startAnimation(scaleUp);
+                    formedText.startAnimation(scaleDown);
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            wordCount.setText(String.valueOf(wordsLeftCount));
+                            if (wordsLeftCount == 0) {
+                                isComplete = true;
+                                formedText.setText("COMPLETED!");
+                                formedText.startAnimation(textIn);
+                                timer.stop();
+                                gridView.setEnabled(false);
+                            } else {
+                                formedText.startAnimation(textOut);
+                                formedText.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    }, 1000);
+
+                    break;
+                }
+            }
+        }
+        buildWord.setLength(0);
+        if (!isWordCorrect[0]) {
+            gridView.clear();
+            formedText.setText("");
+            formedText.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        try {
+            if (!isRefresh){
+                outState.putStringArrayList("FOUND_WORDS", (ArrayList<String>) foundWords);
+                outState.putSerializable(JAVA, java);
+                outState.putSerializable(SWIFT, swift);
+                outState.putSerializable(KOTLIN, kotlin);
+                outState.putSerializable(MOBILE, mobile);
+                outState.putSerializable(VARIABLE, variable);
+                outState.putSerializable(OBJECTIVEC, objectiveC);
+                outState.putParcelableArrayList("LINE", lines);
+                outState.putCharArray("CHAR", characters);
+                outState.putInt("COUNT", wordsLeftCount);
+                outState.putLong("TIME", SystemClock.elapsedRealtime());
+                outState.putBoolean("COMPLETE", isComplete);
+                outState.putBoolean("RESUME", true);
+                super.onSaveInstanceState(outState);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.refresh, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.refresh) {
+            recreate();
+            isRefresh = true;
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!isRefresh){
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    reDrawStrikeThrough();
+                }
+            }, 500);
+        }
+        isRefresh = false;
+    }
+
+//    @Override
+//    public void onRestoreInstanceState(Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//
+//
+//        if (savedInstanceState != null) {
+//            isResume = true;
+//            foundWords = savedInstanceState.getStringArrayList("FOUND_WORDS");
+//            rObjectiveC = (ResultTextView) savedInstanceState.getSerializable(OBJECTIVEC);
+//            rJava = (ResultTextView) savedInstanceState.getSerializable(JAVA);
+//            rSwift = (ResultTextView) savedInstanceState.getSerializable(SWIFT);
+//            rKotlin = (ResultTextView) savedInstanceState.getSerializable(KOTLIN);
+//            rMobile = (ResultTextView) savedInstanceState.getSerializable(MOBILE);
+//            rVariable = (ResultTextView) savedInstanceState.getSerializable(VARIABLE);
+//            pausedTime = savedInstanceState.getLong("TIME");
+//            wordsLeftCount = savedInstanceState.getInt("COUNT");
+//            lines = savedInstanceState.getParcelableArrayList("LINE");
+//            characters = savedInstanceState.getCharArray("CHAR");
+//            isComplete = savedInstanceState.getBoolean("COMPLETE");
+//        } else {
+//            isResume = false;
+//        }
+//
+//    }
+
+    private void reDrawStrikeThrough(){
+        if (foundWords != null){
+            for (String word : foundWords){
+                switch (word){
+                    case JAVA:
+                        java.setDeleted(true);
+                        java.setPaint(rJava.getGridPaint());
+                        java.startStrikeThroughAnimation();
+                        break;
+                    case SWIFT:
+                        swift.setDeleted(true);
+                        swift.setPaint(rSwift.getGridPaint());
+                        swift.startStrikeThroughAnimation();
+                        break;
+                    case KOTLIN:
+                        kotlin.setDeleted(true);
+                        kotlin.setPaint(rKotlin.getGridPaint());
+                        kotlin.startStrikeThroughAnimation();
+                        break;
+                    case MOBILE:
+                        mobile.setDeleted(true);
+                        mobile.setPaint(rMobile.getGridPaint());
+                        mobile.startStrikeThroughAnimation();
+                        break;
+                    case VARIABLE:
+                        variable.setDeleted(true);
+                        variable.setPaint(rVariable.getGridPaint());
+                        variable.startStrikeThroughAnimation();
+                        break;
+                    case OBJECTIVEC:
+                        objectiveC.setDeleted(true);
+                        objectiveC.setPaint(rObjectiveC.getGridPaint());
+                        objectiveC.startStrikeThroughAnimation();
+                        break;
+                }
+            }
+        }
+    }
 }
+
+

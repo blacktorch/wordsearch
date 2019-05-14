@@ -8,17 +8,18 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class CharAdapter extends BaseAdapter {
+public class CharAdapter extends BaseAdapter implements Serializable {
 
     private final Context context;
     private char[][] letters;
 
 
-    private List<Character> characters;
+    private char[] characters;
 
     public CharAdapter(Context context){
         this.context = context;
@@ -30,20 +31,25 @@ public class CharAdapter extends BaseAdapter {
         characters = convertMultiDimeToList(letters);
     }
 
-    private List<Character> convertMultiDimeToList(char[][] multiArr){
+    private char[] convertMultiDimeToList(char[][] multiArr){
         List<Character> list = new ArrayList<>();
+        char[] charList = new char[100];
         for (char[] row : multiArr) {
             for (int col = 0; col < multiArr.length; col++) {
                 list.add(row[col]);
             }
         }
 
-        return list;
+        for(int i = 0; i < list.size(); i++){
+            charList[i] = list.get(i);
+        }
+
+        return charList;
     }
 
     @Override
     public int getCount() {
-        return characters.size();
+        return characters.length;
     }
 
     @Override
@@ -65,8 +71,16 @@ public class CharAdapter extends BaseAdapter {
 
         }
         TextView charView = convertView.findViewById(R.id.letter);
-        charView.setText(String.valueOf(characters.get(position).charValue()));
+        charView.setText(String.valueOf(characters[position]));
         //Log.d("POSITION", "getView: " + position);
         return convertView;
+    }
+
+    public char[] getCharacters(){
+        return characters;
+    }
+
+    public void setCharacters(char[] characters){
+        this.characters = characters;
     }
 }
