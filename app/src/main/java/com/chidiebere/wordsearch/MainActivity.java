@@ -1,10 +1,12 @@
 package com.chidiebere.wordsearch;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -304,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
                     wordsLeftCount--;
 
-
+                    vibrate();
                     formedText.startAnimation(scaleUp);
                     formedText.startAnimation(scaleDown);
 
@@ -402,31 +404,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         isRefresh = false;
     }
 
-//    @Override
-//    public void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//
-//
-//        if (savedInstanceState != null) {
-//            isResume = true;
-//            foundWords = savedInstanceState.getStringArrayList("FOUND_WORDS");
-//            rObjectiveC = (ResultTextView) savedInstanceState.getSerializable(OBJECTIVEC);
-//            rJava = (ResultTextView) savedInstanceState.getSerializable(JAVA);
-//            rSwift = (ResultTextView) savedInstanceState.getSerializable(SWIFT);
-//            rKotlin = (ResultTextView) savedInstanceState.getSerializable(KOTLIN);
-//            rMobile = (ResultTextView) savedInstanceState.getSerializable(MOBILE);
-//            rVariable = (ResultTextView) savedInstanceState.getSerializable(VARIABLE);
-//            pausedTime = savedInstanceState.getLong("TIME");
-//            wordsLeftCount = savedInstanceState.getInt("COUNT");
-//            lines = savedInstanceState.getParcelableArrayList("LINE");
-//            characters = savedInstanceState.getCharArray("CHAR");
-//            isComplete = savedInstanceState.getBoolean("COMPLETE");
-//        } else {
-//            isResume = false;
-//        }
-//
-//    }
-
     private void reDrawStrikeThrough(){
         if (foundWords != null){
             for (String word : foundWords){
@@ -464,6 +441,18 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 }
             }
         }
+    }
+
+    private void vibrate(){
+        // Get instance of Vibrator from current Context
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        // Start without a delay
+        // Each element then alternates between vibrate, sleep, vibrate, sleep...
+        long[] pattern = {0, 80, 100, 80, 100};
+
+        // The '-1' here means to vibrate once, as '-1' is out of bounds in the pattern array
+        v.vibrate(pattern, -1);
     }
 }
 
