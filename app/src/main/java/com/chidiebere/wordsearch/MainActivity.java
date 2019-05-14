@@ -1,11 +1,16 @@
 package com.chidiebere.wordsearch;
 
 import android.annotation.SuppressLint;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Chronometer;
 import android.widget.GridView;
 import android.widget.TextView;
 
@@ -32,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
         gridView.setAdapter(charAdapter);
 
 
+
+
         final boolean[] isWordCorrect = {false};
         final int[] currentPosition = {-1};
         final StringBuilder buildWord = new StringBuilder();
@@ -43,6 +50,31 @@ public class MainActivity extends AppCompatActivity {
         final ResultTextView kotlin = findViewById(R.id.text_kotlin);
         final ResultTextView mobile = findViewById(R.id.text_mobile);
         final ResultTextView variable = findViewById(R.id.text_variable);
+
+        final TextView formedText = findViewById(R.id.formed_text);
+        final Animation textIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.text_in);
+        final Animation textOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.text_out);
+        final Animation scaleUp = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_up);
+        final Animation scaleDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.scale_down);
+
+        final TextView wordCount = findViewById(R.id.word_count);
+        final TextView wordsLeft = findViewById(R.id.words_left);
+        final int[] wordsLeftCount = {6};
+
+        final long[] elapsedTime = new long[1];
+        final Chronometer timer = findViewById(R.id.timer_text);
+
+        timer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                long minutes = ((SystemClock.elapsedRealtime() - timer.getBase())/1000) / 60;
+                long seconds = ((SystemClock.elapsedRealtime() - timer.getBase())/1000) % 60;
+                elapsedTime[0] = SystemClock.elapsedRealtime();
+                Log.d("TIMER", "onChronometerTick: " + minutes + " : " + seconds);
+            }
+        });
+
+        timer.start();
 
 
 
@@ -75,6 +107,11 @@ public class MainActivity extends AppCompatActivity {
 
                             if (position != currentPosition[0]){
                                 buildWord.append(a);
+                                formedText.setText(buildWord.toString());
+                                if (formedText.getVisibility() ==  View.INVISIBLE){
+                                    formedText.startAnimation(textIn);
+                                    formedText.setVisibility(View.VISIBLE);
+                                }
                                 currentPosition[0] = position;
                             }
 
@@ -157,6 +194,29 @@ public class MainActivity extends AppCompatActivity {
                                                         break;
                                                 }
 
+                                                wordsLeftCount[0]--;
+
+                                                if (wordsLeftCount[0]==0){
+                                                    wordCount.setVisibility(View.INVISIBLE);
+                                                    wordsLeft.setText("COMPLETED");
+                                                    timer.stop();
+                                                    gridView.setEnabled(false);
+                                                }
+
+                                                formedText.startAnimation(scaleUp);
+                                                formedText.startAnimation(scaleDown);
+
+                                                final Handler handler = new Handler();
+                                                handler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        //Do something after 100ms
+                                                        formedText.startAnimation(textOut);
+                                                        formedText.setVisibility(View.INVISIBLE);
+                                                        wordCount.setText(String.valueOf(wordsLeftCount[0]));
+                                                    }
+                                                }, 1000);
+
                                                 break;
                                             }
                                         }
@@ -164,6 +224,8 @@ public class MainActivity extends AppCompatActivity {
                                     buildWord.setLength(0);
                                     if (!isWordCorrect[0]){
                                         gridView.clear();
+                                        formedText.setText("");
+                                        formedText.setVisibility(View.INVISIBLE);
                                     }
 
                                     break;
@@ -173,6 +235,8 @@ public class MainActivity extends AppCompatActivity {
                             if (action == MotionEvent.ACTION_UP){
                                 buildWord.setLength(0);
                                 gridView.clear();
+                                formedText.setText("");
+                                formedText.setVisibility(View.INVISIBLE);
                             }
                         }
 
