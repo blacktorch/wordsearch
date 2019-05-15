@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <font-family xmlns:app="http://schemas.android.com/apk/res-auto">
-    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/opensans_bold"/>
-    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/opensans_bolditalic" />
-    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/opensans_extrabold"/>
-    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/opensans_extrabolditalic" />
-    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/opensans_semibolditalic" />
-    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/opensans_italic" />
-    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/opensans_lightitalic" />
-    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/opensans_semibold"/>
-    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/opensans_regular"/>
-    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/opensans_light"/>
+    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/open_sans_bold"/>
+    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/open_sans_bold_italic" />
+    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/open_sans_extra_bold"/>
+    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/open_sans_extra_bold_italic" />
+    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/open_sans_semi_bold_italic" />
+    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/open_sans_italic" />
+    <font app:fontStyle="italic" app:fontWeight="400" app:font="@font/open_sans_light_italic" />
+    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/open_sans_semi_bold"/>
+    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/open_sans_regular"/>
+    <font app:fontStyle="normal" app:fontWeight="400" app:font="@font/open_sans_light"/>
     <font app:fontStyle="normal" app:fontWeight="600" app:font="@font/varsity_regular"/>
 </font-family>
