@@ -6,11 +6,14 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.animation.AccelerateInterpolator;
 
 import java.io.Serializable;
+
+/***
+ * A custom TextView with Strike Through animation abilities
+ */
 
 public class ResultTextView extends android.support.v7.widget.AppCompatTextView implements Serializable {
 

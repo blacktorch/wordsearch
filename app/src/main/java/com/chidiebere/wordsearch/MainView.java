@@ -7,8 +7,11 @@ import android.util.AttributeSet;
 import android.widget.GridView;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
+
+/***
+ * A custom GridView with added functionality to Swipe and locate cell elements.
+ */
 
 public class MainView extends GridView {
 

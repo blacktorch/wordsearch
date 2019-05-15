@@ -1,5 +1,9 @@
 package com.chidiebere.wordsearch;
 
+
+/***
+ * A Class that describes the position of a word on the grid
+ */
 public class Position {
 
     private int orientation, direction, startRow, endRow, startCol, endCol;

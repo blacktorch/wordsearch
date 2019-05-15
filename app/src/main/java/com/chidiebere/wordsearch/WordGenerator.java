@@ -16,6 +16,11 @@ import static com.chidiebere.wordsearch.Constants.VARIABLE;
 import static com.chidiebere.wordsearch.Constants.VERTICAL;
 import static com.chidiebere.wordsearch.Constants.alphabets;
 
+/***
+ * A Class that helps generate the content of the grid,
+ * it also randomizes the positions of the words
+ */
+
 public class WordGenerator {
 
     private char [][] letters = new char[10][10];

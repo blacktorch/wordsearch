@@ -4,7 +4,9 @@ import android.graphics.Paint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
+/***
+ * The Line shown while swiping on the grid
+ */
 
 public class Line implements Parcelable {
     private float startX;
