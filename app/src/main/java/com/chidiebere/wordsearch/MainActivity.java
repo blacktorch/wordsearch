@@ -263,37 +263,37 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     switch (foundWord) {
                         case JAVA:
                             java.setDeleted(true);
-                            java.setPaint(gridView.getPaint());
+                            java.setPaint(new GridPaint(gridView.getPaint()));
                             java.startStrikeThroughAnimation();
                             buildWord.setLength(0);
                             break;
                         case SWIFT:
                             swift.setDeleted(true);
-                            swift.setPaint(gridView.getPaint());
+                            swift.setPaint(new GridPaint(gridView.getPaint()));
                             swift.startStrikeThroughAnimation();
                             buildWord.setLength(0);
                             break;
                         case KOTLIN:
                             kotlin.setDeleted(true);
-                            kotlin.setPaint(gridView.getPaint());
+                            kotlin.setPaint(new GridPaint(gridView.getPaint()));
                             kotlin.startStrikeThroughAnimation();
                             buildWord.setLength(0);
                             break;
                         case MOBILE:
                             mobile.setDeleted(true);
-                            mobile.setPaint(gridView.getPaint());
+                            mobile.setPaint(new GridPaint(gridView.getPaint()));
                             mobile.startStrikeThroughAnimation();
                             buildWord.setLength(0);
                             break;
                         case VARIABLE:
                             variable.setDeleted(true);
-                            variable.setPaint(gridView.getPaint());
+                            variable.setPaint(new GridPaint(gridView.getPaint()));
                             variable.startStrikeThroughAnimation();
                             buildWord.setLength(0);
                             break;
                         case OBJECTIVEC:
                             objectiveC.setDeleted(true);
-                            objectiveC.setPaint(gridView.getPaint());
+                            objectiveC.setPaint(new GridPaint(gridView.getPaint()));
                             objectiveC.startStrikeThroughAnimation();
                             buildWord.setLength(0);
                             break;
@@ -404,34 +404,46 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             for (String word : foundWords){
                 switch (word){
                     case JAVA:
-                        java.setDeleted(true);
-                        java.setPaint(rJava.getGridPaint());
-                        java.startStrikeThroughAnimation();
+                        if (rJava != null){
+                            java.setDeleted(true);
+                            java.setPaint(rJava.getGridPaint());
+                            java.startStrikeThroughAnimation();
+                        }
                         break;
                     case SWIFT:
-                        swift.setDeleted(true);
-                        swift.setPaint(rSwift.getGridPaint());
-                        swift.startStrikeThroughAnimation();
+                        if (rSwift != null){
+                            swift.setDeleted(true);
+                            swift.setPaint(rSwift.getGridPaint());
+                            swift.startStrikeThroughAnimation();
+                        }
                         break;
                     case KOTLIN:
-                        kotlin.setDeleted(true);
-                        kotlin.setPaint(rKotlin.getGridPaint());
-                        kotlin.startStrikeThroughAnimation();
+                        if (rKotlin != null){
+                            kotlin.setDeleted(true);
+                            kotlin.setPaint(rKotlin.getGridPaint());
+                            kotlin.startStrikeThroughAnimation();
+                        }
                         break;
                     case MOBILE:
-                        mobile.setDeleted(true);
-                        mobile.setPaint(rMobile.getGridPaint());
-                        mobile.startStrikeThroughAnimation();
+                        if (rMobile != null){
+                            mobile.setDeleted(true);
+                            mobile.setPaint(rMobile.getGridPaint());
+                            mobile.startStrikeThroughAnimation();
+                        }
                         break;
                     case VARIABLE:
-                        variable.setDeleted(true);
-                        variable.setPaint(rVariable.getGridPaint());
-                        variable.startStrikeThroughAnimation();
+                        if (rVariable != null){
+                            variable.setDeleted(true);
+                            variable.setPaint(rVariable.getGridPaint());
+                            variable.startStrikeThroughAnimation();
+                        }
                         break;
                     case OBJECTIVEC:
-                        objectiveC.setDeleted(true);
-                        objectiveC.setPaint(rObjectiveC.getGridPaint());
-                        objectiveC.startStrikeThroughAnimation();
+                        if (rObjectiveC != null){
+                            objectiveC.setDeleted(true);
+                            objectiveC.setPaint(rObjectiveC.getGridPaint());
+                            objectiveC.startStrikeThroughAnimation();
+                        }
                         break;
                 }
             }
